@@ -14,7 +14,7 @@ def linkedin_login(driver, email, password):
     email_field.send_keys(email)
     email_field.send_keys(Keys.RETURN)
     
-    time.sleep(2) #Waits for 2 seconds to allow password field to load after submitting email.
+    time.sleep(1) #Waits for 2 seconds to allow password field to load after submitting email.
     
     #Finds password input field, enters provided password, and simulates pressing Enter key to submit the form and complete login process.
     password_field = driver.find_element(By.ID, "password")
