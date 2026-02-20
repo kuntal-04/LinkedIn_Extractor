@@ -3,7 +3,8 @@ from modules.login import linkedin_login         #Imports linkedin_login functio
 from modules.secure_input import masked_input
 from modules.search import linkedin_search
 from modules.session import save_cookies, load_cookies
-
+from modules.scroll import scroll_page
+import time
 
 
 print("Starting LinkedIn Automation...")
@@ -25,7 +26,10 @@ if not logged_in:
 else:
     print("Session restored, already logged in!")
 
+time.sleep(3)
 linkedin_search(driver, keyword)
+
+scroll_page(driver, 5)
 
 input("Search completed, Press Enter to close browser.")
 driver.quit() 

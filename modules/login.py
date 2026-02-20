@@ -7,14 +7,14 @@ def linkedin_login(driver, email, password):
     sign_in_button = driver.find_element(By.LINK_TEXT, "Sign in")
     sign_in_button.click()
     
-    time.sleep(2) #Waits for 2 seconds to allow login page to load. This is a simple way to ensure elements are available before interacting with them. In a more robust implementation, you might want to use WebDriverWait instead of sleep for better reliability.
+    time.sleep(3) #Waits for 2 seconds to allow login page to load. This is a simple way to ensure elements are available before interacting with them. In a more robust implementation, you might want to use WebDriverWait instead of sleep for better reliability.
     
     #Finds email input field, enters provided email, and simulates pressing Enter key to submit the form.
     email_field = driver.find_element(By.ID, "username")
     email_field.send_keys(email)
     email_field.send_keys(Keys.RETURN)
     
-    time.sleep(2) #Waits for 2 seconds to allow password field to load after submitting email.
+    time.sleep(3) #Waits for 2 seconds to allow password field to load after submitting email.
     
     #Finds password input field, enters provided password, and simulates pressing Enter key to submit the form and complete login process.
     password_field = driver.find_element(By.ID, "password")
