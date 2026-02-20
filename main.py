@@ -4,15 +4,20 @@ from modules.secure_input import masked_input
 from modules.search import linkedin_search
 from modules.session import save_cookies, load_cookies
 from modules.scroll import scroll_page
+from modules.extractor import result_extractor
+from modules.filter_controller import select_filter
 import time
 
 
 print("Starting LinkedIn Automation...")
 
+#-----PHASE 1: User Login-----
 #First ask for login credentials, then start browser.
 email = input("Enter your LinkedIn email: ") #Prompts user to enter their LinkedIn email address and stores it in the variable 'email'.
 password = masked_input("Enter your LinkedIn password: ") #Prompts user to enter their LinkedIn password securely (without echoing it to the terminal) and stores it in the variable 'password'.
-keyword = input("Enter search keyword: ") #Prompts user to enter a search keyword for LinkedIn and stores it in the variable 'keyword'.
+keyword = input("Enter search keyword: ").replace("Search ", "").strip()
+ #Prompts user to enter a search keyword for LinkedIn and stores it in the variable 'keyword'.
+ #strip() removes any leading like 'search' from input and ensure the keyword is clean.
 
 driver = start_browser()
 
@@ -26,10 +31,30 @@ if not logged_in:
 else:
     print("Session restored, already logged in!")
 
+#-----PHASE 2: Searching and Scrolling results-----
 time.sleep(3)
 linkedin_search(driver, keyword)
 
+# Force People results page directly
+#driver.get(f"https://www.linkedin.com/search/results/people/?keywords={keyword.replace(' ', '%20')}")
+
+
+select_filter(driver, "people")
+
 scroll_page(driver, 5)
 
-input("Search completed, Press Enter to close browser.")
+print("Current URL:", driver.current_url)
+
+
+#-----PHASE 3: Data Extraction-----
+#Extracting data 
+print("Extracting data from search...")
+time.sleep(3)
+
+data = result_extractor(driver)
+print(f"\nTotal profiles found: {len(data)}\n")
+for d in data:
+    print(d)
+
+input("Automation done, Press Enter to close browser.")
 driver.quit() 
