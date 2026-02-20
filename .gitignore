@@ -29,3 +29,7 @@ data/
 
 # Driver cache
 .wdm/
+
+#Session file
+session/
+
