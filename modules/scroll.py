@@ -1,12 +1,32 @@
-import random
 import time
+from selenium.webdriver.common.by import By
 
-def scroll_page(driver, scroll_count = 5, scroll_pause_time = 2):
-    
-    for i in range(scroll_count):
-        
-        #Scroll down to bottom
-        driver.execute_script("window.scrollTo(0, document.body.scrollHeight);") #Scrolls to the bottom of the page using JavaScript execution. This is necessary to load more content on LinkedIn pages that use infinite scrolling.
-        time.sleep(scroll_pause_time + random.uniform(2, 4)) #Waits for a random amount of time between scrolls to mimic human behavior and avoid being detected as a bot. The pause time is randomized by adding a random value between 2 and 4 seconds to the base scroll_pause_time.
-        
-        print(f"SCrolled down {i + 1} time(s)")
+
+def scroll_page(driver, target_count=20, max_scrolls=20):
+
+    last_height = driver.execute_script("return document.body.scrollHeight")
+
+    for i in range(max_scrolls):
+
+        # Scroll down
+        driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+        time.sleep(2)
+
+        # Count loaded profiles
+        cards = driver.find_elements(By.XPATH, "//div[contains(@class,'entity-result')]")
+
+        print(f"Scroll {i+1} → Profiles loaded: {len(cards)}")
+
+        # Stop if enough profiles loaded
+        if len(cards) >= target_count:
+            print("Target profile count reached.")
+            break
+
+        # Stop if page can't scroll more
+        new_height = driver.execute_script("return document.body.scrollHeight")
+
+        if new_height == last_height:
+            print("Reached end of page.")
+            break
+
+        last_height = new_height

@@ -5,7 +5,7 @@ from modules.search import linkedin_search
 from modules.session import save_cookies, load_cookies
 from modules.scroll import scroll_page
 from modules.extractor import result_extractor
-from modules.filter_controller import select_filter
+from modules.exporter import export_data
 import time
 
 
@@ -36,12 +36,11 @@ time.sleep(3)
 linkedin_search(driver, keyword)
 
 # Force People results page directly
-#driver.get(f"https://www.linkedin.com/search/results/people/?keywords={keyword.replace(' ', '%20')}")
+driver.get(f"https://www.linkedin.com/search/results/people/?keywords={keyword.replace(' ', '%20')}")
 
+time.sleep(3)
 
-select_filter(driver, "people")
-
-scroll_page(driver, 5)
+scroll_page(driver, target_count = 25) #Scrolls the page to load more search results. The scroll_page function is called with the browser driver and a target count of 25 profiles to load.
 
 print("Current URL:", driver.current_url)
 
@@ -55,6 +54,15 @@ data = result_extractor(driver)
 print(f"\nTotal profiles found: {len(data)}\n")
 for d in data:
     print(d)
+    
+#-----PHASE 4: Exporting Data-----
+choice = input("Do you want to export the data? (y/n): ").lower()
+choice = input("Enter export format (csv/excel/skip): ").lower()
+
+if choice in ["csv", "excel"]:
+    export_data(data, filetype=choice)
+else:
+    print("Export skipped.")
 
 input("Automation done, Press Enter to close browser.")
 driver.quit() 

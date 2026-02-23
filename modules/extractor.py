@@ -5,43 +5,74 @@ from selenium.webdriver.support import expected_conditions as EC
 
 def result_extractor(driver):
 
-    wait = WebDriverWait(driver, 10)
+    wait = WebDriverWait(driver, 15)
 
-    # wait until results load
+    # Wait until at least one result card loads
     wait.until(
-    EC.presence_of_element_located((By.XPATH, "//div[contains(@class,'entity-result')]"))
+        EC.presence_of_element_located(
+            (By.XPATH, "//div[contains(@class,'entity-result')]")
+        )
     )
 
-    
     profiles = driver.find_elements(By.XPATH, "//div[contains(@class,'entity-result')]")
 
-    #profiles = driver.find_elements(By.XPATH, "//li[contains(@class,'reusable-search__result-container')]")
-
-    print("Profiles found:", len(profiles))
+    print("Profiles detected on page:", len(profiles))
 
     data = []
+    seen_links = set()
 
     for profile in profiles:
 
+        # ---------- GET PROFILE LINK + NAME ----------
         try:
-            name = profile.find_element(By.XPATH, ".//span[@aria-hidden='true']").text.strip()
-        except:
-            name = "N/A"
+            link_element = profile.find_element(
+                By.XPATH,
+                ".//a[contains(@href,'/in/')]"
+            )
 
-        try:
-            title = profile.find_element(By.XPATH, ".//div[contains(@class,'t-14')]").text.strip()
-        except:
-            title = "N/A"
+            link = link_element.get_attribute("href")
 
-        try:
-            link = profile.find_element(By.XPATH, ".//a[contains(@href,'/in/')]").get_attribute("href")
-        except:
-            link = "N/A"
+            if not link or link in seen_links:
+                continue
 
+            seen_links.add(link)
+
+            name = link_element.text.strip()
+
+            if not name:
+                continue
+
+        except:
+            continue
+
+
+        # ---------- GET TITLE (ROBUST METHOD) ----------
+        title = "N/A"
+
+        title_selectors = [
+            ".//div[contains(@class,'entity-result__primary-subtitle')]",
+            ".//div[contains(@class,'t-14') and contains(@class,'t-black')]",
+            ".//span[contains(@class,'t-14')]",
+            ".//div[contains(@class,'t-12')]"
+        ]
+
+        for xp in title_selectors:
+            try:
+                t = profile.find_element(By.XPATH, xp).text.strip()
+                if t:
+                    title = t
+                    break
+            except:
+                pass
+
+
+        # ---------- SAVE ----------
         data.append({
             "Name": name,
             "Title": title,
             "Profile Link": link
         })
 
+
+    print("Unique profiles extracted:", len(data))
     return data
