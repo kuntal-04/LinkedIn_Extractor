@@ -57,6 +57,11 @@ for d in data:
     
 #-----PHASE 4: Exporting Data-----
 choice = input("Do you want to export the data? (y/n): ").lower()
+if choice != 'y':
+    print("Export skipped.")
+    input("Automation done, Press Enter to close browser.")
+    driver.quit() 
+    exit()
 choice = input("Enter export format (csv/excel/skip): ").lower()
 
 if choice in ["csv", "excel"]:

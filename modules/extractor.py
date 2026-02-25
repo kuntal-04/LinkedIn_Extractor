@@ -49,21 +49,15 @@ def result_extractor(driver):
         # ---------- GET TITLE (ROBUST METHOD) ----------
         title = "N/A"
 
-        title_selectors = [
-            ".//div[contains(@class,'entity-result__primary-subtitle')]",
-            ".//div[contains(@class,'t-14') and contains(@class,'t-black')]",
-            ".//span[contains(@class,'t-14')]",
-            ".//div[contains(@class,'t-12')]"
-        ]
+        try:
+            title_element = profile.find_element(
+                By.XPATH,
+                ".//div[contains(@class,'entity-result__primary-subtitle')]/span"
+            )
+            title = title_element.text.strip()
 
-        for xp in title_selectors:
-            try:
-                t = profile.find_element(By.XPATH, xp).text.strip()
-                if t:
-                    title = t
-                    break
-            except:
-                pass
+        except:
+            pass
 
 
         # ---------- SAVE ----------
